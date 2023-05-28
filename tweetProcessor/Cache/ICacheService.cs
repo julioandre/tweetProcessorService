@@ -1,3 +1,5 @@
+using tweetProcessor.Models;
+
 namespace tweetProcessor.Cache;
 
 public interface ICacheService
@@ -26,4 +28,6 @@ public interface ICacheService
     /// <param name="keyValues"></param>
     /// <returns></returns>
     object RemoveData(string key);
+
+    public long SetTimeline(string key, Tweet tweet);
 }

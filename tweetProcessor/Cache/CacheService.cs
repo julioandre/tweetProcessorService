@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using tweetProcessor.Config;
+using tweetProcessor.Models;
 
 namespace tweetProcessor.Cache;
 
@@ -47,5 +48,10 @@ public class CacheService:ICacheService
     {
         var _data = _db.StringGet(key);
         return _data.IsNullOrEmpty;
+    }
+    public long SetTimeline(string key, Tweet tweet)
+    {
+        var pushToRedis = _db.ListRightPush(key, JsonConvert.SerializeObject(tweet));
+        return pushToRedis;
     }
 }
