@@ -64,4 +64,45 @@ public class TaskHandler:ITaskHandler
             System.Diagnostics.Debug.WriteLine(ex.Message);
         }
     }
+    public async Task HandleSingleTweets(CancellationToken stoppingToken)
+    {
+        
+        string topic = "ProcessorTopic";
+        string groupId = "processTL_group";
+        string followerId;
+        IList<string> followerList = new List<string>();
+        var config = new ConsumerConfig {GroupId = groupId, BootstrapServers = bootstrapServers, AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest};
+        try
+        {
+            using (var consumerBuilder = new ConsumerBuilder<Ignore, string>(config).Build())
+            {
+                consumerBuilder.Subscribe(topic);
+                
+                try
+                {
+                    while (!stoppingToken.IsCancellationRequested)
+                    {
+                        Console.WriteLine("Starting to Consume");
+                        var consumer = consumerBuilder.Consume(stoppingToken);
+                        var orderRequest = JsonConvert.DeserializeObject<updateFollowerDTO>(consumer.Message.Value);
+                        Console.WriteLine("Consuming");
+                        
+                        //var followees1 = JsonConvert.DeserializeObject<List<FollowEntity>>(followees.ToList());
+
+                        foreach (var item in orderRequest.followData)
+                        {
+                            _cacheService.SetTimeline(item.followerId, orderRequest.tweet);
+                        }
+
+                    }
+                    
+                }catch (OperationCanceledException) {
+                    consumerBuilder.Close();
+                }
+            }
+        
+        }catch (Exception ex) {
+            System.Diagnostics.Debug.WriteLine(ex.Message);
+        }
+    }
 }
