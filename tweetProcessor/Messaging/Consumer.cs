@@ -15,5 +15,6 @@ public class Consumer:BackgroundService
         using var scope = _serviceProvider.CreateScope();
         _handler = scope.ServiceProvider.GetRequiredService<ITaskHandler>();
         await Task.Run(() => _handler.HandleTweets(stoppingToken));
+        await Task.Run(() => _handler.HandleSingleTweets(stoppingToken));
     }
 }
