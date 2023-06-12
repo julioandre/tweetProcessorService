@@ -1,4 +1,5 @@
 using tweetProcessor.Cache;
+using tweetProcessor.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<ITaskHandler, TaskHandler>();
+builder.Services.AddHostedService<Consumer>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     
