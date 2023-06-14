@@ -18,7 +18,7 @@ public class tweetProcessorController:ControllerBase
 
     [HttpPost]
     [Route("populateTimeline")]
-    public async Task<IActionResult> PopulateTimeline( ProcessorDTO processor)
+    public ActionResult PopulateTimeline( ProcessorDTO processor)
     {
         if (!ModelState.IsValid)
         {
@@ -30,6 +30,7 @@ public class tweetProcessorController:ControllerBase
             foreach (var follower in processor.followers)
             {
                 var result = _cacheService.SetTimeline(follower, processor.tweet);
+                Console.WriteLine(follower);
                 // if (result)
                 // {
                 //     return Ok();
@@ -42,7 +43,7 @@ public class tweetProcessorController:ControllerBase
         }
         catch (Exception ex)
         {
-            
+            return Problem(ex.Message);
         }
 
         return Ok();
@@ -51,8 +52,8 @@ public class tweetProcessorController:ControllerBase
     }
 
     [HttpGet]
-    [Route("populateTimeline")]
-    public async Task<IActionResult> GetTimeline(string followeeId)
+    [Route("populateTimeline/{followeeId}")]
+    public  IActionResult GetTimeline(string followeeId)
     {
         if (!ModelState.IsValid)
         {
